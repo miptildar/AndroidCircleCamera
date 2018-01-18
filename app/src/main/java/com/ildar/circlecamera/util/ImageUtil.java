@@ -18,17 +18,18 @@ public class ImageUtil {
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
 
-        System.out.println("processImage height "+bitmap.getHeight()+", width "+bitmap.getWidth()+" IMAGE_SIZE "+imageSize);
 
         // Crop the image into a square
         int croppedWidth = (pictureWidth > pictureHeight) ? pictureHeight : pictureWidth;
         int croppedHeight = (pictureWidth > pictureHeight) ? pictureHeight : pictureWidth;
 
         Bitmap cropped = Bitmap.createBitmap(bitmap, 0, 0, croppedWidth, croppedHeight);
-        bitmap.recycle();
+
+
 
         // Scale down to the output size
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(cropped, imageSize, imageSize, true);
+        bitmap.recycle();
         cropped.recycle();
 
         return scaledBitmap;

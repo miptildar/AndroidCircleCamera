@@ -103,14 +103,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         System.out.println("onPictureTaken()");
                         Bitmap bitmap;
 
-//                        bitmap = ImageUtil.processImage(
-//                                data,
-//                                camera.getParameters().getPictureSize().width,
-//                                camera.getParameters().getPictureSize().height,
-//                                IMAGE_SIZE
-//                        );
+                        bitmap = ImageUtil.processImage(
+                                data,
+                                camera.getParameters().getPictureSize().width,
+                                camera.getParameters().getPictureSize().height,
+                                IMAGE_SIZE
+                        );
 
-                        bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                        //bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
 
                         imageView.setImageBitmap(bitmap);
 
