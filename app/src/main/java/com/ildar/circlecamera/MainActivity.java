@@ -2,6 +2,7 @@ package com.ildar.circlecamera;
 
 import android.Manifest;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -33,16 +34,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private ImageView imageView;
 
-    private CardView previewCardView;
-
     private Button button;
 
     Camera camera;
-
-    boolean cameraActive = false;
-
-    boolean cameraConfigured = false;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         surfaceHolder.addCallback(this);
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
-        previewCardView = findViewById(R.id.previewCardView);
         imageView = findViewById(R.id.imageView);
         button = findViewById(R.id.button);
 
@@ -92,34 +85,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void openCamera(){
         camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
 
-        if(!cameraConfigured){
-            CameraUtil.configureSquareCamera(this, camera, IMAGE_SIZE);
-            cameraConfigured = true;
-        }
+        // One have to configure camera each time you open it...unfortunately
+        CameraUtil.configureSquareCamera(this, camera, IMAGE_SIZE);
     }
 
     private void takePhoto(){
         Log.d(TAG, "takePhoto");
-        if(camera == null) Log.d(TAG, "Camera is null");
+        if(camera == null) {
+            Log.d(TAG, "Camera is null");
+            return;
+        }
 
-        camera.stopPreview();
+
         camera.takePicture(null, null, new Camera.PictureCallback() {
                     @Override
                     public void onPictureTaken(byte[] data, Camera camera) {
                         System.out.println("onPictureTaken()");
-                        Bitmap bitmap = ImageUtil.processImage(
-                                data,
-                                camera.getParameters().getPictureSize().width,
-                                camera.getParameters().getPictureSize().height,
-                                IMAGE_SIZE
-                        );
+                        Bitmap bitmap;
+
+//                        bitmap = ImageUtil.processImage(
+//                                data,
+//                                camera.getParameters().getPictureSize().width,
+//                                camera.getParameters().getPictureSize().height,
+//                                IMAGE_SIZE
+//                        );
+
+                        bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
 
                         imageView.setImageBitmap(bitmap);
-                        camera.release();
-                        camera = null;
+
+
+                        // Take photos infinitely:
+                        try {
+                            camera.setPreviewDisplay(surfaceHolder);
+                            camera.startPreview();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 }
         );
+
     }
 
 

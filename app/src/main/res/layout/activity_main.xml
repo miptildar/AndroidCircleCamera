@@ -8,23 +8,17 @@
     android:orientation="vertical"
     tools:context="com.ildar.circlecamera.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Press to open preview"
-        android:layout_marginTop="50dp"
-        />
 
     <android.support.v7.widget.CardView
         android:id="@+id/previewCardView"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp">
 
         <SurfaceView
             android:id="@+id/surfaceView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_width="100dp"
+            android:layout_height="100dp" />
 
     </android.support.v7.widget.CardView>
 
@@ -47,12 +41,12 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginTop="10dp"
-        card_view:cardCornerRadius="4dp">
+        card_view:cardCornerRadius="50dp">
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
     </android.support.v7.widget.CardView>
 

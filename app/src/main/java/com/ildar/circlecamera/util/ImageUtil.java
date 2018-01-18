@@ -12,7 +12,6 @@ import java.io.ByteArrayOutputStream;
 public class ImageUtil {
 
     public static Bitmap processImage(byte[] data, int pictureWidth, int pictureHeight, int imageSize){
-        // Determine the width/height of the image
 
         // Load the bitmap from the byte array
         BitmapFactory.Options options = new BitmapFactory.Options();

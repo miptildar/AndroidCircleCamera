@@ -19,11 +19,10 @@ public class CameraUtil {
     public static void configureSquareCamera(Context context, Camera camera, int IMAGE_SIZE){
         Camera.Parameters camParams = camera.getParameters();
 
-        // Size issues
+        // SIZE ISSUES
+        // We are looking for a Preview size which parameters (width, height) are the closest to square:  | width - height |  ->  min
         Camera.Size[] previewSizes = new Camera.Size[camParams.getSupportedPreviewSizes().size()];
         previewSizes = camParams.getSupportedPreviewSizes().toArray(previewSizes);
-
-        // Probably sorting isn't necessary. Our aim is to find supported preview size which height and width >= IMAGE_SIZE
         Arrays.sort(previewSizes, new Comparator<Camera.Size>() {
             @Override
             public int compare(Camera.Size size1, Camera.Size size2) {
@@ -32,11 +31,9 @@ public class CameraUtil {
 
                 if(delta1 > delta2) return 1;
                 else if(delta1 < delta2) return -1;
-
                 return 0;
             }
         });
-
 
         Camera.Size targetPreviewSize = null;
         for(int i=0; i<previewSizes.length; i++){
@@ -46,24 +43,37 @@ public class CameraUtil {
             }
         }
 
-        if(targetPreviewSize == null) {
-            // Problems
-            throw new IllegalStateException("Problems...");
-        }
+        if(targetPreviewSize == null) throw new RuntimeException("Problems with Camera preview size");
         camParams.setPreviewSize(targetPreviewSize.width, targetPreviewSize.height);
 
 
-        Camera.Size pictureSize = camParams.getSupportedPictureSizes().get(0);
-        for (Camera.Size size : camParams.getSupportedPictureSizes()) {
-            if (size.width == targetPreviewSize.width && size.height == targetPreviewSize.height) {
-                pictureSize = size;
+        // Now lets find a Picture size which parameters (width, height) are the closest to square: | width - height |  ->  min
+        Camera.Size targetPictureSize = null;
+        Camera.Size[] pictureSizes = new Camera.Size[camParams.getSupportedPictureSizes().size()];
+        pictureSizes = camParams.getSupportedPictureSizes().toArray(pictureSizes);
+        Arrays.sort(pictureSizes, new Comparator<Camera.Size>() {
+            @Override
+            public int compare(Camera.Size size1, Camera.Size size2) {
+                int delta1 = Math.abs(size1.height - size1.width);
+                int delta2 = Math.abs(size2.height - size2.width);
+
+                if(delta1 > delta2) return 1;
+                else if(delta1 < delta2) return -1;
+                return 0;
+            }
+        });
+        for(Camera.Size pictureSize: pictureSizes){
+            if(pictureSize.width >= IMAGE_SIZE && pictureSize.height >= IMAGE_SIZE){
+                targetPictureSize = pictureSize;
                 break;
             }
         }
-        camParams.setPictureSize(pictureSize.width, pictureSize.height);
+
+        if(targetPictureSize == null) throw new RuntimeException("Problems with Camera picture size");
+        camParams.setPictureSize(targetPictureSize.width, targetPictureSize.height);
 
 
-        // Rotation issues
+        // ROTATION ISSUES
         camParams.set("orientation", "portrait");
 
         Camera.CameraInfo camInfo = new Camera.CameraInfo();

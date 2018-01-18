@@ -21,4 +21,17 @@ public class CommonUtil {
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, resources.getDisplayMetrics()));
     }
 
+
+
+    public static <T> String printArray(T[] array, ToString<T> toString){
+        StringBuilder stringBuilder = new StringBuilder();
+        for(int i=0; i<array.length; i++) stringBuilder.append(toString.toString(array[i])).append(", ");
+
+        return stringBuilder.toString();
+    }
+
+    public interface ToString<T>{
+        String toString(T t);
+    }
+
 }
