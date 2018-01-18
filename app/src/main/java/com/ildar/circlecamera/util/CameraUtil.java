@@ -23,6 +23,7 @@ public class CameraUtil {
         Camera.Size[] previewSizes = new Camera.Size[camParams.getSupportedPreviewSizes().size()];
         previewSizes = camParams.getSupportedPreviewSizes().toArray(previewSizes);
 
+        // Probably sorting isn't necessary. Our aim is to find supported preview size which height and width >= IMAGE_SIZE
         Arrays.sort(previewSizes, new Comparator<Camera.Size>() {
             @Override
             public int compare(Camera.Size size1, Camera.Size size2) {

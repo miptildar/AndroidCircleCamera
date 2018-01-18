@@ -68,16 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.button:
-                if(cameraActive){
-                    takePhoto();
-                    button.setText("Open Camera");
-                    cameraActive = false;
-                }else{
-                    openCamera();
-                    button.setText("Take photo");
-                    cameraActive = true;
-                }
-                openCamera();
+                takePhoto();
                 break;
 
             default:
@@ -85,15 +76,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        openCamera();
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (camera != null) camera.release();
+    }
+
     private void openCamera(){
         camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
-
-        try {
-            camera.setPreviewDisplay(surfaceHolder);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        camera.startPreview();
 
         if(!cameraConfigured){
             CameraUtil.configureSquareCamera(this, camera, IMAGE_SIZE);
@@ -102,6 +99,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void takePhoto(){
+        Log.d(TAG, "takePhoto");
+        if(camera == null) Log.d(TAG, "Camera is null");
+
+        camera.stopPreview();
         camera.takePicture(null, null, new Camera.PictureCallback() {
                     @Override
                     public void onPictureTaken(byte[] data, Camera camera) {
@@ -115,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                         imageView.setImageBitmap(bitmap);
                         camera.release();
+                        camera = null;
                     }
                 }
         );
@@ -124,26 +126,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         Log.d(TAG, "surfaceCreated");
-//        try {
-//            // Important https://stackoverflow.com/a/30616683/3405101
-//            Log.d(TAG, this.surfaceHolder+" "+camera);
-//            camera.setPreviewDisplay(this.surfaceHolder);
-//            camera.startPreview();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            // Important https://stackoverflow.com/a/30616683/3405101
+            Log.d(TAG, this.surfaceHolder+" "+camera);
+            camera.setPreviewDisplay(this.surfaceHolder);
+            camera.startPreview();
+        } catch (IOException e) {
+
+        }
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         Log.d(TAG, "surfaceChanged");
-//        camera.stopPreview();
-//        try {
-//            camera.setPreviewDisplay(this.surfaceHolder);
-//            camera.startPreview();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        camera.stopPreview();
+        try {
+            camera.setPreviewDisplay(this.surfaceHolder);
+            camera.startPreview();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
