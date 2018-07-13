@@ -22,9 +22,7 @@ public class ImageUtil {
         // Crop the image into a square
         int croppedWidth = (pictureWidth > pictureHeight) ? pictureHeight : pictureWidth;
         int croppedHeight = (pictureWidth > pictureHeight) ? pictureHeight : pictureWidth;
-
         Bitmap cropped = Bitmap.createBitmap(bitmap, 0, 0, croppedWidth, croppedHeight);
-
 
 
         // Scale down to the output size

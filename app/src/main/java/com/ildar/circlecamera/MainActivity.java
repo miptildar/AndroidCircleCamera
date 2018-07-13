@@ -13,7 +13,9 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.ildar.circlecamera.util.Blur;
 import com.ildar.circlecamera.util.CameraUtil;
 import com.ildar.circlecamera.util.CommonUtil;
 import com.ildar.circlecamera.util.ImageUtil;
@@ -21,7 +23,7 @@ import com.ildar.circlecamera.util.PermissionUtil;
 
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, SurfaceHolder.Callback{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SurfaceHolder.Callback {
 
     private final static String TAG = "MainActivity";
 
@@ -43,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        PermissionUtil.checkPermission(this, Manifest.permission.CAMERA);
+
         surfaceView = findViewById(R.id.surfaceView);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
@@ -52,14 +56,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button = findViewById(R.id.button);
 
         button.setOnClickListener(this);
-
-
-        PermissionUtil.checkPermission(this, Manifest.permission.CAMERA);
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.button:
                 takePhoto();
                 break;
@@ -82,16 +83,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (camera != null) camera.release();
     }
 
-    private void openCamera(){
-        camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
+    private void openCamera() {
+        try {
+            camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
 
-        // One have to configure camera each time you open it...unfortunately
-        CameraUtil.configureSquareCamera(this, camera, IMAGE_SIZE);
+            // One have to configure camera each time you open it...unfortunately
+            CameraUtil.configureSquareCamera(this, camera, IMAGE_SIZE);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Exception, probably camera is in use by other application", Toast.LENGTH_LONG).show();
+        }
     }
 
-    private void takePhoto(){
+    private void takePhoto() {
         Log.d(TAG, "takePhoto");
-        if(camera == null) {
+        if (camera == null) {
             Log.d(TAG, "Camera is null");
             return;
         }
@@ -112,7 +118,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                         //bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
 
+
                         imageView.setImageBitmap(bitmap);
+
+                        // I was testing blur effect in Android:
+                        //imageView.setImageBitmap(Blur.fastblur(getApplicationContext(), bitmap, 10));
 
 
                         // Take photos infinitely:
@@ -135,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d(TAG, "surfaceCreated");
         try {
             // Important https://stackoverflow.com/a/30616683/3405101
-            Log.d(TAG, this.surfaceHolder+" "+camera);
+            Log.d(TAG, this.surfaceHolder + " " + camera);
             camera.setPreviewDisplay(this.surfaceHolder);
             camera.startPreview();
         } catch (IOException e) {

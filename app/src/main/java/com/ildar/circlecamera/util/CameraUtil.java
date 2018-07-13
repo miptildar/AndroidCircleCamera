@@ -16,7 +16,7 @@ import static android.content.Context.WINDOW_SERVICE;
 
 public class CameraUtil {
 
-    public static void configureSquareCamera(Context context, Camera camera, int IMAGE_SIZE){
+    public static void configureSquareCamera(Context context, Camera camera, int IMAGE_SIZE) {
         Camera.Parameters camParams = camera.getParameters();
 
         // SIZE ISSUES
@@ -29,21 +29,22 @@ public class CameraUtil {
                 int delta1 = Math.abs(size1.height - size1.width);
                 int delta2 = Math.abs(size2.height - size2.width);
 
-                if(delta1 > delta2) return 1;
-                else if(delta1 < delta2) return -1;
+                if (delta1 > delta2) return 1;
+                else if (delta1 < delta2) return -1;
                 return 0;
             }
         });
 
         Camera.Size targetPreviewSize = null;
-        for(int i=0; i<previewSizes.length; i++){
-            if(previewSizes[i].height >= IMAGE_SIZE && previewSizes[i].width >= IMAGE_SIZE){
+        for (int i = 0; i < previewSizes.length; i++) {
+            if (previewSizes[i].height >= IMAGE_SIZE && previewSizes[i].width >= IMAGE_SIZE) {
                 targetPreviewSize = previewSizes[i];
                 break;
             }
         }
 
-        if(targetPreviewSize == null) throw new RuntimeException("Problems with Camera preview size");
+        if (targetPreviewSize == null)
+            throw new RuntimeException("Problems with Camera preview size");
         camParams.setPreviewSize(targetPreviewSize.width, targetPreviewSize.height);
 
 
@@ -57,19 +58,20 @@ public class CameraUtil {
                 int delta1 = Math.abs(size1.height - size1.width);
                 int delta2 = Math.abs(size2.height - size2.width);
 
-                if(delta1 > delta2) return 1;
-                else if(delta1 < delta2) return -1;
+                if (delta1 > delta2) return 1;
+                else if (delta1 < delta2) return -1;
                 return 0;
             }
         });
-        for(Camera.Size pictureSize: pictureSizes){
-            if(pictureSize.width >= IMAGE_SIZE && pictureSize.height >= IMAGE_SIZE){
+        for (Camera.Size pictureSize : pictureSizes) {
+            if (pictureSize.width >= IMAGE_SIZE && pictureSize.height >= IMAGE_SIZE) {
                 targetPictureSize = pictureSize;
                 break;
             }
         }
 
-        if(targetPictureSize == null) throw new RuntimeException("Problems with Camera picture size");
+        if (targetPictureSize == null)
+            throw new RuntimeException("Problems with Camera picture size");
         camParams.setPictureSize(targetPictureSize.width, targetPictureSize.height);
 
 
@@ -80,13 +82,21 @@ public class CameraUtil {
         Camera.getCameraInfo(Camera.CameraInfo.CAMERA_FACING_FRONT, camInfo);
         int cameraRotationOffset = camInfo.orientation;
 
-        int rotation = ((WindowManager)context.getSystemService(WINDOW_SERVICE)).getDefaultDisplay().getRotation();
+        int rotation = ((WindowManager) context.getSystemService(WINDOW_SERVICE)).getDefaultDisplay().getRotation();
         int degrees = 0;
         switch (rotation) {
-            case Surface.ROTATION_0: degrees = 0; break;
-            case Surface.ROTATION_90: degrees = 90; break;
-            case Surface.ROTATION_180: degrees = 180; break;
-            case Surface.ROTATION_270: degrees = 270; break;
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
         }
 
         int result;
